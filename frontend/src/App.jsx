@@ -1,14 +1,10 @@
-import './App.css'
-import { Button } from  '@chakra-ui/react'
+import "./App.css";
+import AllRoutes from "./routes/AllRoutes";
 
 function App() {
-
   return (
-    <>
-      <div>Yeppie</div>
-      <Button className='bg-red-400'>Okay Nau</Button>
-    </>
-  )
+    <AllRoutes />
+  );
 }
 
-export default App
+export default App;
