@@ -7,6 +7,7 @@ const userSchema = new Schema({
   },
   email: {
     type: String,
+    unique: true,
     required: true,
   },
   password: {
@@ -21,6 +22,17 @@ const userSchema = new Schema({
 }, {
   timestamps: true
 });
+
+userSchema.set("toJSON", {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+    delete returnedObject.password;
+  },
+});
+
+
 
 const User = model('User', userSchema);
 

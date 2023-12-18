@@ -1,8 +1,16 @@
 const express = require("express");
 const cors = require("cors");
+require("express-async-errors");
 const mongoose = require("mongoose");
 const { MONGODB_URI } = require("./utils/config");
 const logger = require("./utils/logger");
+const userRouter = require("./controllers/users");
+const {
+  requestLogger,
+  responseLogger,
+  unknownEndpoint,
+  errorHandler,
+} = require("./utils/middleware");
 
 const app = express();
 
@@ -17,7 +25,13 @@ mongoose
     logger.error("error connecting to MongoDB:", error.message)
   );
 
-app.use(express.json());
+app.use(express.json()); // for parsing application/json
 app.use(cors());
+app.use(requestLogger);
+app.use(responseLogger);
+
+app.use("/api/users", userRouter);
+app.use(unknownEndpoint);
+app.use(errorHandler);
 
 module.exports = app;
