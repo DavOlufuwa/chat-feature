@@ -20,8 +20,7 @@ const responseLogger = (request, response, next) => {
     logger.info("Status Code:", statusCode);
     logger.info("Body:", body);
     logger.info("---");
-
-    originalSend.call(response);
+    originalSend.call(response, body);
   };
 
   next();

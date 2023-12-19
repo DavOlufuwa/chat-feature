@@ -10,7 +10,7 @@ const decodeAccessToken = (token) => {
   return jwt.verify(token, process.env.SECRET_TOKEN_KEY);
 };
 
-const generateRefreshToken = (token) => {
+const generateRefreshToken = (obj) => {
   return jwt.sign(obj, process.env.SECRET_REFRESH_KEY, {
     expiresIn: "24h",
   });

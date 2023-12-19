@@ -11,6 +11,7 @@ const {
   unknownEndpoint,
   errorHandler,
 } = require("./utils/middleware");
+const loginRouter = require("./controllers/authentication");
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use(requestLogger);
 app.use(responseLogger);
 
 app.use("/api/users", userRouter);
+app.use("/api/login", loginRouter);
 app.use(unknownEndpoint);
 app.use(errorHandler);
 
