@@ -6,7 +6,7 @@ const userRouter = require("express").Router();
 // create new user
 
 userRouter.post("/signup", async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, image } = req.body;
 
   const userExists = await User.findOne({ email });
 
@@ -18,15 +18,26 @@ userRouter.post("/signup", async (req, res) => {
 
   const passwordHash = await hashPassword(password);
 
-  const userToSave = new User({
+  const newUser = image === "" ? {
+    name,
+    email,
+    password : passwordHash
+  } : {
     name,
     email,
     password : passwordHash,
-  });
+    profilePhoto: image
+  }
+
+
+  const userToSave = new User(newUser);
 
   const response = await userToSave.save();
 
   res.status(201).send(response);
 });
+
+
+// Image upload
 
 module.exports = userRouter;

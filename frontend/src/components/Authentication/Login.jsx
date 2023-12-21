@@ -6,23 +6,91 @@ import {
   InputGroup,
   InputRightElement,
   Button,
+  useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { loginUser } from "../../actions/user";
 
 const Login = () => {
-  
+  const toast = useToast();
+
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
-  })
+  });
   const [showPassword, setShowPasssword] = useState(false);
-  const { email, password } = credentials
+  const [loading, setLoading] = useState(false);
+  const { email, password } = credentials;
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setCredentials({ ...credentials, [name]: value })
-  }
-  
+    const { name, value } = e.target;
+    setCredentials({ ...credentials, [name]: value });
+  };
+
+  const handleSubmit = async () => {
+    setLoading(true);
+
+    if (email === "" || password === "") {
+      toast({
+        title: "Please fill all the fields",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      setLoading(false);
+      return;
+    } else {
+      try {
+        const response = await loginUser(credentials);
+        if (response.status === 200) {
+          toast({
+            title: "Login Successful",
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+          });
+
+          setCredentials({
+            email: "",
+            password: "",
+          });
+
+          setLoading(false);
+
+          // Add the Navigation Logic Too. 
+        }
+      } catch (error) {
+        if (error.response.data.error === "Incorrect email") {
+          toast({
+            title: "Incorrect email",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+          setLoading(false);
+        }
+        else if (error.response.data.error === "Incorrect password") {
+          toast({
+            title: "Incorrect password",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+          setLoading(false);
+        }
+        else {
+          toast({
+            title: "There was an error logging you in",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+          setLoading(false);
+        }
+      }
+    }
+  };
+
   return (
     <VStack>
       <FormControl id="email" isRequired>
@@ -56,8 +124,13 @@ const Login = () => {
           </InputRightElement>
         </InputGroup>
       </FormControl>
-      <Button colorScheme="blue" width={"100%"}>
-        Sign Up
+      <Button
+        colorScheme="blue"
+        width={"100%"}
+        isLoading={loading}
+        onClick={handleSubmit}
+      >
+        Log in
       </Button>
     </VStack>
   );
