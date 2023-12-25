@@ -118,11 +118,23 @@ chatRouter.post("/group", async (req, res) => {
   res.status(201).send(fullGroupChat);
 });
 
+// Renaming a Group Chat
+chatRouter.put("/group/rename", async (req, res) => {
+  const { chatId, newChatName } = req.body;
+
+  const updatedChat = await Chat.findByIdAndUpdate(
+    chatId, { chatName: newChatName }, { new: true })
+    .populate("users", "-refreshToken").populate("groupAdmin");
+  
+  if (updatedChat) {
+    res.status(200).send(updatedChat);
+  } else {
+    res.status(400).send({ error: "Chat not found" });
+  }
+});
+
 // Accessing a Group Chat
 chatRouter.get("/group/:id", async (req, res) => {});
-
-// Renaming a Group Chat
-chatRouter.put("/group/rename", async (req, res) => {});
 
 // Removing a User from a Group Chat
 chatRouter.put("/group/remove", async (req, res) => {});
