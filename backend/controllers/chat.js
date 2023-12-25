@@ -28,7 +28,7 @@ chatRouter.post("/", async (req, res) => {
       { users: { $elemMatch: { $eq: currentUser.id } } },
     ],
   })
-    .populate("users", "-password")
+    .populate("users")
     .populate("latestMessage");
 
   // Chatlist with latest messages
@@ -50,8 +50,7 @@ chatRouter.post("/", async (req, res) => {
     const createdChat = await Chat.create(chatData);
 
     const fullChat = await Chat.findOne({ id: createdChat.id }).populate(
-      "users",
-      "-password"
+      "users"
     );
 
     res.status(200).send(fullChat);
@@ -69,22 +68,55 @@ chatRouter.get("/", async (req, res) => {
   const foundChats = await Chat.find({
     users: { $elemMatch: { $eq: currentUser.id } },
   })
-    .populate("users", "-password")
-    .populate("groupAdmin", "-password")
+    .populate("users")
+    .populate("groupAdmin")
     .populate("latestMessage")
     .sort({ updatedAt: -1 });
-
 
   const foundChatList = await User.populate(foundChats, {
     path: "latestMessage.sender",
     select: "name pic email",
-  })
+  });
 
   res.status(200).send(foundChatList);
 });
 
 // Creating a Group Chat
-chatRouter.post("/group", async (req, res) => {});
+chatRouter.post("/group", async (req, res) => {
+  const currentUser = req.user;
+  const { name, users } = req.body;
+
+  if (!currentUser) {
+    return res.status(401).send({ error: "Unauthorized action. Please Login" });
+  }
+
+  let userList = JSON.parse(users);
+
+  if (userList.length < 2) {
+    return res
+      .status(400)
+      .send({ error: "More than 2 users are required to form a group chat" });
+  }
+
+  // userList.unshift(currentUser.id);
+
+  const groupChat = new Chat({
+    chatName: name,
+    users: userList,
+    isGroupChat: true,
+    groupAdmin: currentUser._id,
+  });
+
+  const createdGroupChat = await groupChat.save();
+
+  const groupChatId = createdGroupChat._id;
+
+  const fullGroupChat = await Chat.findOne({ _id: groupChatId })
+    .populate("users", "-refreshToken")
+    .populate("groupAdmin");
+
+  res.status(201).send(fullGroupChat);
+});
 
 // Accessing a Group Chat
 chatRouter.get("/group/:id", async (req, res) => {});

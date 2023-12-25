@@ -28,7 +28,7 @@ const userSchema = new Schema({
 
 userSchema.set("toJSON", {
   transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString();
+    returnedObject.id = String(returnedObject._id);
     delete returnedObject._id;
     delete returnedObject.__v;
     delete returnedObject.password;
