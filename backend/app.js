@@ -10,8 +10,10 @@ const {
   responseLogger,
   unknownEndpoint,
   errorHandler,
+  accessTokenExtractor,
 } = require("./utils/middleware");
 const loginRouter = require("./controllers/authentication");
+const chatRouter = require("./controllers/chat");
 
 const app = express();
 
@@ -30,9 +32,10 @@ app.use(express.json()); // for parsing application/json
 app.use(cors());
 app.use(requestLogger);
 app.use(responseLogger);
-
+app.use(accessTokenExtractor);
 app.use("/api/users", userRouter);
 app.use("/api/login", loginRouter);
+app.use("/api/chat", chatRouter);
 app.use(unknownEndpoint);
 app.use(errorHandler);
 

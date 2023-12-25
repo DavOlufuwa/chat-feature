@@ -1,4 +1,6 @@
-const logger = require('./logger')
+const User = require('../models/user');
+const logger = require('./logger');
+const { decodeAccessToken } = require('./tkgenerator');
 
 
 
@@ -49,10 +51,36 @@ const errorHandler = (error, request, response, next) => {
 
   next();
 };
+const accessTokenExtractor = async (request, response, next) => {
+  const authorization = request.get("authorization");
+  if (authorization && authorization.startsWith("Bearer ")) {
+    request.token = authorization.split(" ")[1];
+  } else {
+    request.token = null;
+  }
+  next();
+};
+
+const authUserExtractor = async (request, response, next) => {
+  const verifiedUser = decodeAccessToken(request.token)
+
+  if (!verifiedUser.id){
+    return response.status(401).json({ error: "invalid or missing token" });
+  } else {
+    request.user = await User.findById(verifiedUser.id)
+  }
+  next();
+}
+
+
+
+
 
 module.exports = {
   requestLogger,
   responseLogger,
   unknownEndpoint,
   errorHandler,
+  accessTokenExtractor,
+  authUserExtractor
 }
