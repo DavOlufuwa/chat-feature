@@ -4,7 +4,7 @@ const User = require("../models/user");
 const { authUserExtractor } = require("../utils/middleware");
 
 // Accessing the User Chat List
-chatRouter.get("/", authUserExtractor, async (req, res) => {
+chatRouter.post("/", authUserExtractor, async (req, res) => {
   const currentUser = req.user;
   const { otherUserId } = req.body;
 
@@ -21,7 +21,7 @@ chatRouter.get("/", authUserExtractor, async (req, res) => {
   }
 
   // Find all Chats where current user is a participant
-   var foundChats = await Chat.find({
+  var foundChats = await Chat.find({
     isGroupChat: false,
     $and: [
       { users: { $elemMatch: { $eq: otherUserId } } },
@@ -58,14 +58,36 @@ chatRouter.get("/", authUserExtractor, async (req, res) => {
   }
 });
 
-// Creating a Chat
-chatRouter.post("/", authUserExtractor, async (req, res) => {});
+// fetching all the Chats
+chatRouter.get("/", authUserExtractor, async (req, res) => {
+  const currentUser = req.user;
 
-// Accessing a Group Chat
-chatRouter.get("/group/:id", authUserExtractor, async (req, res) => {});
+  if (!currentUser) {
+    return res.status(401).send({ error: "Unauthorized action. Please Login" });
+  }
+
+  const foundChats = await Chat.find({
+    users: { $elemMatch: { $eq: currentUser.id } },
+  })
+    .populate("users", "-password")
+    .populate("groupAdmin", "-password")
+    .populate("latestMessage")
+    .sort({ updatedAt: -1 });
+
+
+  const foundChatList = await User.populate(foundChats, {
+    path: "latestMessage.sender",
+    select: "name pic email",
+  })
+
+  res.status(200).send(foundChatList);
+});
 
 // Creating a Group Chat
 chatRouter.post("/group", authUserExtractor, async (req, res) => {});
+
+// Accessing a Group Chat
+chatRouter.get("/group/:id", authUserExtractor, async (req, res) => {});
 
 // Renaming a Group Chat
 chatRouter.put("/group/rename", authUserExtractor, async (req, res) => {});
