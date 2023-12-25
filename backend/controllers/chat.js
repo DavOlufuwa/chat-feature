@@ -28,7 +28,7 @@ chatRouter.post("/", async (req, res) => {
       { users: { $elemMatch: { $eq: currentUser.id } } },
     ],
   })
-    .populate("users")
+    .populate("users", "-refreshToken")
     .populate("latestMessage");
 
   // Chatlist with latest messages
@@ -68,8 +68,8 @@ chatRouter.get("/", async (req, res) => {
   const foundChats = await Chat.find({
     users: { $elemMatch: { $eq: currentUser.id } },
   })
-    .populate("users")
-    .populate("groupAdmin")
+    .populate("users", "-refreshToken")
+    .populate("groupAdmin", "-refreshToken")
     .populate("latestMessage")
     .sort({ updatedAt: -1 });
 
@@ -113,7 +113,7 @@ chatRouter.post("/group", async (req, res) => {
 
   const fullGroupChat = await Chat.findOne({ _id: groupChatId })
     .populate("users", "-refreshToken")
-    .populate("groupAdmin");
+    .populate("groupAdmin", "-refreshToken");
 
   res.status(201).send(fullGroupChat);
 });
@@ -123,9 +123,13 @@ chatRouter.put("/group/rename", async (req, res) => {
   const { chatId, newChatName } = req.body;
 
   const updatedChat = await Chat.findByIdAndUpdate(
-    chatId, { chatName: newChatName }, { new: true })
-    .populate("users", "-refreshToken").populate("groupAdmin");
-  
+    chatId,
+    { chatName: newChatName },
+    { new: true }
+  )
+    .populate("users", "-refreshToken")
+    .populate("groupAdmin", "-refreshToken");
+
   if (updatedChat) {
     res.status(200).send(updatedChat);
   } else {
@@ -133,13 +137,59 @@ chatRouter.put("/group/rename", async (req, res) => {
   }
 });
 
-// Accessing a Group Chat
-chatRouter.get("/group/:id", async (req, res) => {});
+// Adding a User to a Group Chat
+chatRouter.put("/group/add", async (req, res) => {
+  const { chatId, userId } = req.body;
+
+  const findChat = await Chat.findById(chatId);
+
+  if (!findChat) {
+    return res.status(404).send({ error: "Chat not found" });
+  }
+
+  if (findChat.users.includes(userId)) {
+    return res.status(403).send({ error: "User already exists in the chat" });
+  }
+
+  const addedUser = await Chat.findByIdAndUpdate(
+    chatId,
+    {
+      $push: { users: userId },
+    },
+    { new: true }
+  )
+    .populate("users", "-refreshToken")
+    .populate("groupAdmin", "-refreshToken");
+
+  if (!addedUser) {
+    return res.status(404).send({ error: "Chat not found" });
+  }
+
+  res.status(200).send(addedUser);
+});
 
 // Removing a User from a Group Chat
-chatRouter.put("/group/remove", async (req, res) => {});
+chatRouter.put("/group/remove", async (req, res) => {
+  const { chatId, userId } = req.body;
 
-// Adding a User to a Group Chat
-chatRouter.put("/group/add", async (req, res) => {});
+  const removedUser = await Chat.findByIdAndUpdate(
+    chatId,
+    {
+      $pull: { users: userId },
+    },
+    { new: true }
+  )
+    .populate("users", "-refreshToken")
+    .populate("groupAdmin", "-refreshToken");
+
+  if (!removedUser) {
+    return res.status(404).send({ error: "Chat not found" });
+  }
+
+  res.status(200).send(removedUser);
+});
+
+// Accessing a Group Chat
+chatRouter.get("/group/:id", async (req, res) => {});
 
 module.exports = chatRouter;
