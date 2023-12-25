@@ -4,7 +4,7 @@ const User = require("../models/user");
 const { authUserExtractor } = require("../utils/middleware");
 
 // Accessing the User Chat List
-chatRouter.post("/", authUserExtractor, async (req, res) => {
+chatRouter.post("/", async (req, res) => {
   const currentUser = req.user;
   const { otherUserId } = req.body;
 
@@ -59,7 +59,7 @@ chatRouter.post("/", authUserExtractor, async (req, res) => {
 });
 
 // fetching all the Chats
-chatRouter.get("/", authUserExtractor, async (req, res) => {
+chatRouter.get("/", async (req, res) => {
   const currentUser = req.user;
 
   if (!currentUser) {
@@ -84,18 +84,18 @@ chatRouter.get("/", authUserExtractor, async (req, res) => {
 });
 
 // Creating a Group Chat
-chatRouter.post("/group", authUserExtractor, async (req, res) => {});
+chatRouter.post("/group", async (req, res) => {});
 
 // Accessing a Group Chat
-chatRouter.get("/group/:id", authUserExtractor, async (req, res) => {});
+chatRouter.get("/group/:id", async (req, res) => {});
 
 // Renaming a Group Chat
-chatRouter.put("/group/rename", authUserExtractor, async (req, res) => {});
+chatRouter.put("/group/rename", async (req, res) => {});
 
 // Removing a User from a Group Chat
-chatRouter.put("/group/remove", authUserExtractor, async (req, res) => {});
+chatRouter.put("/group/remove", async (req, res) => {});
 
 // Adding a User to a Group Chat
-chatRouter.put("/group/add", authUserExtractor, async (req, res) => {});
+chatRouter.put("/group/add", async (req, res) => {});
 
 module.exports = chatRouter;
