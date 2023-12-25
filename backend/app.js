@@ -15,6 +15,7 @@ const {
 } = require("./utils/middleware");
 const loginRouter = require("./controllers/authentication");
 const chatRouter = require("./controllers/chat");
+const messageRouter = require("./controllers/message");
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use(accessTokenExtractor);
 app.use("/api/users", userRouter);
 app.use("/api/login", loginRouter);
 app.use("/api/chat", authUserExtractor, chatRouter);
+app.use("/api/message", authUserExtractor, messageRouter)
 app.use(unknownEndpoint);
 app.use(errorHandler);
 

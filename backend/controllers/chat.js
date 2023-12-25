@@ -34,7 +34,7 @@ chatRouter.post("/", async (req, res) => {
   // Chatlist with latest messages
   foundChats = await User.populate(foundChats, {
     path: "latestMessage.sender",
-    select: "name pic email",
+    select: "name profilePhoto email",
   });
 
   if (foundChats.length > 0) {
@@ -75,7 +75,7 @@ chatRouter.get("/", async (req, res) => {
 
   const foundChatList = await User.populate(foundChats, {
     path: "latestMessage.sender",
-    select: "name pic email",
+    select: "name profilePhoto email",
   });
 
   res.status(200).send(foundChatList);
@@ -104,7 +104,7 @@ chatRouter.post("/group", async (req, res) => {
     chatName: name,
     users: userList,
     isGroupChat: true,
-    groupAdmin: currentUser._id,
+    groupAdmin: currentUser.id,
   });
 
   const createdGroupChat = await groupChat.save();
@@ -189,7 +189,5 @@ chatRouter.put("/group/remove", async (req, res) => {
   res.status(200).send(removedUser);
 });
 
-// Accessing a Group Chat
-chatRouter.get("/group/:id", async (req, res) => {});
 
 module.exports = chatRouter;
