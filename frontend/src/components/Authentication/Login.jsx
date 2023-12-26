@@ -10,10 +10,13 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { loginUser } from "../../actions/user";
+import useAuth from "../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const { setUser, user } = useAuth();
   const toast = useToast();
-
+  const navigate = useNavigate()
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
@@ -50,14 +53,23 @@ const Login = () => {
             isClosable: true,
           });
 
+          setUser({
+            ...user,
+            id: response.data.id,
+            name: response.data.name,
+            profilePhoto: response.data.profilePhoto,
+            email: response.data.email,
+            accessToken: response.data.accessToken,
+          });
+
           setCredentials({
             email: "",
             password: "",
           });
 
           setLoading(false);
-
-          // Add the Navigation Logic Too. 
+          
+          navigate("/chatlist", {replace: true})
         }
       } catch (error) {
         if (error.response.data.error === "Incorrect email") {
@@ -68,8 +80,7 @@ const Login = () => {
             isClosable: true,
           });
           setLoading(false);
-        }
-        else if (error.response.data.error === "Incorrect password") {
+        } else if (error.response.data.error === "Incorrect password") {
           toast({
             title: "Incorrect password",
             status: "error",
@@ -77,8 +88,7 @@ const Login = () => {
             isClosable: true,
           });
           setLoading(false);
-        }
-        else {
+        } else {
           toast({
             title: "There was an error logging you in",
             status: "error",

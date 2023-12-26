@@ -1,17 +1,17 @@
 import { useEffect } from "react";
-// import useRefreshToken from "./useRefreshToken";
-// import { axiosAuth } from "../lib/axios";
-// import useAuth from "./useAuth";
+import useAuth from "./useAuth";
+import { axiosAuth } from "../actions/axios";
+import useRefresher from "./useRefreshToken";
 
 const useAxiosAuth = () => {
-  // const { auth } = useAuth();
-  // const refresher = useRefreshToken();
+  const { user } = useAuth();
+  const refresher = useRefresher();
 
   useEffect(() => {
     const requestIntercept = axiosAuth.interceptors.request.use(
       (config) => {
         if (!config.headers["Authorization"]) {
-          config.headers["Authorization"] = `Bearer ${auth.accessToken}`;
+          config.headers["Authorization"] = `Bearer ${user.accessToken}`;
         }
         return config;
       },
@@ -25,7 +25,7 @@ const useAxiosAuth = () => {
         if (error?.response?.status === 401 && !prevRequest?.sent) {
           prevRequest.sent = true;
           await refresher();
-          prevRequest.headers["Authorization"] = `Bearer ${auth.accessToken}`;
+          prevRequest.headers["Authorization"] = `Bearer ${user.accessToken}`;
           return axiosAuth(prevRequest);
         }
         return Promise.reject(error);
@@ -36,7 +36,7 @@ const useAxiosAuth = () => {
       axiosAuth.interceptors.request.eject(requestIntercept);
       axiosAuth.interceptors.response.eject(responseIntercept);
     };
-  }, [auth, refresher]);
+  }, [user, refresher]);
 
   return axiosAuth;
 };

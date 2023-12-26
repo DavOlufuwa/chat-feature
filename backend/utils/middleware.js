@@ -1,6 +1,6 @@
 const User = require('../models/user');
 const logger = require('./logger');
-const { decodeAccessToken } = require('./tkgenerator');
+const { decodeAccessToken, decodeRefreshToken } = require('./tkgenerator');
 
 
 
@@ -72,6 +72,26 @@ const authUserExtractor = async (request, response, next) => {
   next();
 }
 
+const  refreshTokenExtractor = async (request, response, next) => {
+  const cookies = request.cookies;
+
+  if(!cookies?.jwt){
+    return response.status(403).json({ error: "No cookies found" });
+  }
+
+  const refreshToken = cookies.jwt;
+
+  const verifiedRefreshToken = decodeRefreshToken(refreshToken);
+
+  if(!verifiedRefreshToken.id){
+    return response.status(403).json({ error: "invalid or missing refresh token" });
+  }
+
+  request.user = await User.findById(verifiedRefreshToken.id)
+
+  next();
+}
+
 
 
 
@@ -82,5 +102,6 @@ module.exports = {
   unknownEndpoint,
   errorHandler,
   accessTokenExtractor,
+  refreshTokenExtractor,
   authUserExtractor
 }

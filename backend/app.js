@@ -16,6 +16,7 @@ const {
 const loginRouter = require("./controllers/authentication");
 const chatRouter = require("./controllers/chat");
 const messageRouter = require("./controllers/message");
+const refreshRouter = require("./controllers/refresh");
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use("/api/users", userRouter);
 app.use("/api/login", loginRouter);
 app.use("/api/chat", authUserExtractor, chatRouter);
 app.use("/api/message", authUserExtractor, messageRouter)
+app.use("/api/refresh", refreshRouter)
 app.use(unknownEndpoint);
 app.use(errorHandler);
 
