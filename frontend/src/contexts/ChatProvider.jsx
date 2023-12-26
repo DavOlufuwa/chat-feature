@@ -8,7 +8,7 @@ const ChatContext = createContext();
 export const ChatProvider = ({ children }) => {
   const [user, setUser] = useState({});
   const [selectedChat, setSelectedChat] = useState();
-  const [chatState, setChatState] = useState();
+  const [chats, setChats] = useState();
   const navigate = useNavigate();
 
   // Getting the User Data at the beginning
@@ -32,8 +32,8 @@ export const ChatProvider = ({ children }) => {
         setUser,
         selectedChat,
         setSelectedChat,
-        chatState,
-        setChatState,
+        chats,
+        setChats,
       }}
     >
       {children}

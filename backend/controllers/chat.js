@@ -13,6 +13,8 @@ chatRouter.post("/", async (req, res) => {
     return res.status(401).send({ error: "Unauthorized action. Please Login" });
   }
 
+  console.log(otherUserId)
+
   // other user doesn't
   if (!otherUserId) {
     return res

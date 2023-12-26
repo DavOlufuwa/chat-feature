@@ -18,6 +18,7 @@ import {
   useDisclosure,
   Input,
   useToast,
+  Spinner
 } from "@chakra-ui/react";
 import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import ProfileBox from "./ProfileBox";
@@ -26,7 +27,7 @@ import Chatloading from "./Chatloading";
 import useAxiosAuth from "../hooks/useAxiosAuth";
 import UserListItem from "./UserListItem";
 const SideNav = () => {
-  const { user, selectedChat, setSelectedChat } = useAuth();
+  const { user, setChats, chats, selectedChat, setSelectedChat } = useAuth();
   const toast = useToast();
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
@@ -69,15 +70,18 @@ const SideNav = () => {
   const accessChat = async (userId) => {
     try{
       setLoadingChat(true)
-      const response =  await axiosAuth.post('/api/chat',{userId})
+      const response =  await axiosAuth.post('/api/chat', {otherUserId: userId})
+      
+      setSelectedChat(response.data)
+      setLoadingChat(false)
+      onClose()
 
-      if(response.status === 200){
-        setSelectedChat(response.data)
-        setLoadingChat(false)
-        onClose()
+      if(chats.find((c) => c.id !== response.data.id)){
+        setChats([response.data, ...chats]);
       }
 
     }catch(error){
+      setLoadingChat(false);
       toast({
         title: "Error fetching the chat",
         description: "failed to load search results",
@@ -156,6 +160,7 @@ const SideNav = () => {
               ))
             )}
           </DrawerBody>
+          {loadingChat && <Spinner ml="auto" d="flex"/>}
         </DrawerContent>
       </Drawer>
     </nav>
