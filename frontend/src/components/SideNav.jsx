@@ -18,7 +18,7 @@ import {
   useDisclosure,
   Input,
   useToast,
-  Spinner
+  Spinner,
 } from "@chakra-ui/react";
 import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import ProfileBox from "./ProfileBox";
@@ -68,19 +68,21 @@ const SideNav = () => {
   };
 
   const accessChat = async (userId) => {
-    try{
-      setLoadingChat(true)
-      const response =  await axiosAuth.post('/api/chat', {otherUserId: userId})
-      
-      setSelectedChat(response.data)
-      setLoadingChat(false)
-      onClose()
+    setLoadingChat(true);
+    try {
+      const response = await axiosAuth.post("/api/chat", {
+        otherUserId: userId,
+      });
 
-      if(chats.find((c) => c.id !== response.data.id)){
+      setSelectedChat(response.data);
+
+      setLoadingChat(false);
+      onClose();
+
+      if (chats.find((c) => c.id !== response.data.id)) {
         setChats([response.data, ...chats]);
       }
-
-    }catch(error){
+    } catch (error) {
       setLoadingChat(false);
       toast({
         title: "Error fetching the chat",
@@ -91,7 +93,7 @@ const SideNav = () => {
         position: "top-right",
       });
     }
-  }
+  };
 
   return (
     <nav>
@@ -160,7 +162,7 @@ const SideNav = () => {
               ))
             )}
           </DrawerBody>
-          {loadingChat && <Spinner ml="auto" d="flex"/>}
+          {loadingChat && <Spinner ml="auto" d="flex" />}
         </DrawerContent>
       </Drawer>
     </nav>

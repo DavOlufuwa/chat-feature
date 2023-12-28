@@ -1,7 +1,7 @@
 const chatRouter = require("express").Router();
 const Chat = require("../models/chat");
 const User = require("../models/user");
-const { authUserExtractor } = require("../utils/middleware");
+
 
 // Accessing the User Chat List
 chatRouter.post("/", async (req, res) => {
@@ -13,8 +13,6 @@ chatRouter.post("/", async (req, res) => {
     return res.status(401).send({ error: "Unauthorized action. Please Login" });
   }
 
-  console.log(otherUserId)
-
   // other user doesn't
   if (!otherUserId) {
     return res
@@ -23,7 +21,7 @@ chatRouter.post("/", async (req, res) => {
   }
 
   // Find all Chats where current user is a participant
-  var foundChats = await Chat.find({
+  let foundChats = await Chat.find({
     isGroupChat: false,
     $and: [
       { users: { $elemMatch: { $eq: otherUserId } } },
@@ -40,18 +38,20 @@ chatRouter.post("/", async (req, res) => {
   });
 
   if (foundChats.length > 0) {
+    console.log("FOUND CHAT")
     res.status(200).send(foundChats[0]);
   } else {
     // If the chat is not found, create a new chat
-    const chatData = {
+    const newChatData = new Chat ({
       chatName: "sender",
       isGroupChat: false,
       users: [currentUser.id, otherUserId],
-    };
+    });
 
-    const createdChat = await Chat.create(chatData);
+    // console.log("New Chat Created")
+    const createdChat = await newChatData.save();
 
-    const fullChat = await Chat.findOne({ id: createdChat.id }).populate(
+    const fullChat = await Chat.findOne({ _id: createdChat._id }).populate(
       "users"
     );
 

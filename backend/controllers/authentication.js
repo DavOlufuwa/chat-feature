@@ -29,7 +29,9 @@ loginRouter.post("/", async (req, res) => {
 
   const userForToken = {
     email: user.email,
-    id: user._id,
+    id: user.id,
+    name: user.name,
+    profilePhoto: user.profilePhoto,
   };
 
   const accessToken = generateAccessToken(userForToken);
@@ -44,7 +46,7 @@ loginRouter.post("/", async (req, res) => {
     .status(200)
     .cookie("jwt", refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       SameSite: "None",
       maxAge: 24 * 60 * 60 * 1000,
     })

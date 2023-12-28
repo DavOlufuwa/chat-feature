@@ -23,7 +23,7 @@ export const ChatProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem("userInfo", JSON.stringify(user));
-  }, [user]);
+  }, [user, setUser]);
 
   return (
     <ChatContext.Provider
