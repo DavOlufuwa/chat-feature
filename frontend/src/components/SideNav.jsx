@@ -27,7 +27,7 @@ import Chatloading from "./Chatloading";
 import useAxiosAuth from "../hooks/useAxiosAuth";
 import UserListItem from "./UserListItem";
 const SideNav = () => {
-  const { user, setChats, chats, selectedChat, setSelectedChat } = useAuth();
+  const { user, setChats, chats, setSelectedChat } = useAuth();
   const toast = useToast();
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);

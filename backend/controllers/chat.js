@@ -38,7 +38,6 @@ chatRouter.post("/", async (req, res) => {
   });
 
   if (foundChats.length > 0) {
-    console.log("FOUND CHAT")
     res.status(200).send(foundChats[0]);
   } else {
     // If the chat is not found, create a new chat
