@@ -100,7 +100,7 @@ chatRouter.post("/group", async (req, res) => {
       .send({ error: "More than 2 users are required to form a group chat" });
   }
 
-  // userList.unshift(currentUser.id);
+  userList.push(currentUser.id);
 
   const groupChat = new Chat({
     chatName: name,

@@ -15,7 +15,6 @@ const AllChats = () => {
   const fetchChats = async () => {
     try {
       const response = await axiosAuth.get("/api/chat");
-      console.log(response.data);
       setChats(response.data);
     } catch (error) {
       toast({
