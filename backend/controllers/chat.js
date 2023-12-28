@@ -121,11 +121,11 @@ chatRouter.post("/group", async (req, res) => {
 
 // Renaming a Group Chat
 chatRouter.put("/group/rename", async (req, res) => {
-  const { chatId, newChatName } = req.body;
+  const { chatId, newGroupName } = req.body;
 
   const updatedChat = await Chat.findByIdAndUpdate(
     chatId,
-    { chatName: newChatName },
+    { chatName: newGroupName },
     { new: true }
   )
     .populate("users", "-refreshToken")
@@ -149,7 +149,7 @@ chatRouter.put("/group/add", async (req, res) => {
   }
 
   if (findChat.users.includes(userId)) {
-    return res.status(403).send({ error: "User already exists in the chat" });
+    return res.status(400).send({ error: "User already exists in the chat" });
   }
 
   const addedUser = await Chat.findByIdAndUpdate(

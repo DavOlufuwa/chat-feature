@@ -3,6 +3,7 @@ import { Box, Text, IconButton } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { getSender, getSenderInfo } from "../actions/getSender";
 import ProfileBox from "./ProfileBox";
+import UpdateGroupChatModal from "./UpdateGroupChatModal";
 
 const SingleChat = () => {
   const { user, selectedChat, setSelectedChat } = useAuth();
@@ -18,15 +19,19 @@ const SingleChat = () => {
             <IconButton
               display={{ base: "flex", md: "none" }}
               icon={<ArrowBackIcon />}
-              size={{ base: "md", md: "sm"}}
+              size={{ base: "md", md: "sm" }}
               onClick={() => setSelectedChat("")}
             />
             {selectedChat.isGroupChat ? (
-              <span className="font-semibold">{selectedChat.chatName}</span>
+              <>
+                <span className="font-semibold">{selectedChat.chatName}</span>
+                <UpdateGroupChatModal />
+              </>
+
             ) : (
               <>
                 {getSender(user, selectedChat.users)}
-                <ProfileBox user={getSenderInfo(user, selectedChat.users)}/>
+                <ProfileBox user={getSenderInfo(user, selectedChat.users)} />
               </>
             )}
           </Text>
