@@ -121,8 +121,8 @@ const SideNav = () => {
               <Avatar
                 className="cursor-pointer"
                 size="sm"
-                name="Dan Abrahmov"
-                src="https://bit.ly/dan-abramov"
+                name={user.name}
+                src={user.profilePhoto}
               />
             </MenuButton>
             <MenuList>

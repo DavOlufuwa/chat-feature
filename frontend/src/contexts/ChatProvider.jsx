@@ -9,6 +9,7 @@ export const ChatProvider = ({ children }) => {
   const [user, setUser] = useState({});
   const [selectedChat, setSelectedChat] = useState();
   const [chats, setChats] = useState();
+  const [refetch, setRefetch] = useState(false);
   const navigate = useNavigate();
 
   // Getting the User Data at the beginning
@@ -34,6 +35,8 @@ export const ChatProvider = ({ children }) => {
         setSelectedChat,
         chats,
         setChats,
+        refetch,
+        setRefetch,
       }}
     >
       {children}

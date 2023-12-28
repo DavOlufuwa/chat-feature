@@ -11,12 +11,15 @@ import { AddIcon } from "@chakra-ui/icons";
 import useAxiosAuth from "../hooks/useAxiosAuth";
 import Chatloading from "./Chatloading";
 import GroupChatModal from "./GroupChatModal";
+import { getSender } from "../actions/getSender";
+
+
 
 const AllChats = () => {
   const axiosAuth = useAxiosAuth();
   const toast = useToast();
   const [loggedUser, setLoggedUser] = useState();
-  const { chats, setChats, selectedChat, setSelectedChat } = useAuth();
+  const { chats, setChats, selectedChat, setSelectedChat , refetch, } = useAuth();
 
 
   // getChats
@@ -39,13 +42,9 @@ const AllChats = () => {
   useEffect(() => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats();
-  }, []);
+  }, [refetch]);
 
-  const getSender = (loggedUser, chatUsers) => {
-    return chatUsers[0].id === loggedUser.id
-      ? chatUsers[1].name
-      : chatUsers[0].name;
-  };
+  
 
   return (
     <Box
